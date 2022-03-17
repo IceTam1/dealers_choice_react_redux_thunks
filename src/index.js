@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import { render } from 'react-dom';
-import axios from 'axios'
 import { Provider, connect } from 'react-redux'
-import store, {loadPlants} from './store'
+import store, { loadPlants, loadPlantthings, setView } from './store';
+import Nav from './Nav'
+import Plants from './Plants'
+import Plantthings from './Plantstore'
 
 
 
@@ -12,31 +14,37 @@ const App = connect(
   },
  (dispatch) => {
     return { 
-    bootstrap: async()=> {
-      const plants = (await axios.get('/api/plants')).data;
-      dispatch(loadPlants(plants))
+    bootstrap: async ()=> {
+      dispatch(loadPlants());
+      dispatch(loadPlantthings());
+    },
+    setView: function(view){
+      dispatch(setView(view))
     } 
    }
  } 
 )(class App extends Component {  
   componentDidMount (){
       this.props.bootstrap();
+      window.addEventListener('hashchange', ()=> {
+        this.props.setView(window.location.hash.slice(1));
+      });
+      this.props.setView(window.location.hash.slice(1)); 
   }
   render (){
-    const { plants } = this.props;
+    const { plants, view } = this.props;
     return (
-      <ul>
-        {
-          plants.map(plant => {
-              return (
-                  <li key={plant.id}>
-                      {plant.name}
-                  </li>
-              );
-          })  
-        }  
-      </ul>
-    )
+      <div>
+        <h1> My Plant Directory
+        <Nav />
+        </h1>
+        
+        { view === 'plants' && <Plants /> }
+        { view === 'plantthings' && <Plantthings /> }
+      
+      </div>
+  
+    );
   }
 })
 
