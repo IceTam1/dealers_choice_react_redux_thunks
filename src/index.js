@@ -38,7 +38,7 @@ const App = connect(
         <h1> My Plant Directory
         <Nav />
         </h1>
-        
+        { view === ''}
         { view === 'plants' && <Plants /> }
         { view === 'plantthings' && <Plantthings /> }
       
